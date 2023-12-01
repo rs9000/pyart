@@ -24,5 +24,6 @@ from .rsl import read_rsl  # noqa
 from .sigmet import read_sigmet  # noqa
 from .uf import read_uf  # noqa
 from .uf_write import write_uf  # noqa
+from .datamet import read_datamet_xradar # noqa
 
 __all__ = [s for s in dir() if not s.startswith("_")]

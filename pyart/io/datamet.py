@@ -66,9 +66,7 @@ def read_datamet_xradar(filename, **kwargs):
 
     # all sweeps have to have the same number of range bins
     if any(nbins_sweep != nbins_sweep[0]):
-        print("CHECK RESOLUTION")
-        # if resolution
-        # raise ValueError("number of range bins changes between sweeps")
+        print("Warn: Resolution must be the same for all sweeps")
 
     nbins = nbins_sweep[0]
     ssri = np.cumsum(np.append([0], rays_per_sweep[:-1])).astype("int32")
@@ -121,7 +119,7 @@ def read_datamet_xradar(filename, **kwargs):
         for item in dtree[f"sweep_{i}"].data_vars:
             if item in xd.io.backends.datamet.xradar_mapping.keys():
                 key = xd.io.backends.datamet.xradar_mapping[item]
-                if item not in fields.keys():
+                if key not in fields.keys():
                     fields[key] = filemetadata(item)
                     fields[key]["units"] = dtree[f"sweep_{i}"][item].attrs.get("units", "")
                     fields[key]["_FillValue"] = dtree[f"sweep_{i}"][item].attrs.get("_FillValue", -1)
@@ -167,5 +165,4 @@ def read_datamet_xradar(filename, **kwargs):
 
 if __name__ == '__main__':
     radar = read_datamet_xradar(r'C:\RADAR\RAW\2023\11\22\0300\VOL\H\LAURO')
-    kdp_dict, phidpr_dict = pyart.retrieve.kdp_vulpiani(radar)
     print("Done")
