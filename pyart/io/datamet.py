@@ -4,16 +4,15 @@ Utilities for reading Datamet files.
 """
 
 import datetime
-
 import numpy as np
-import pyart.retrieve
+from matplotlib import pyplot as plt
 
+import pyart.retrieve
 from pyart.config import FileMetadata
 from pyart.core.radar import Radar
 from pyart.io.common import make_time_unit_str
 import xradar as xd
 from pyart.testing import get_test_data
-
 
 def read_datamet_xradar(filename, **kwargs):
     """
@@ -95,9 +94,10 @@ def read_datamet_xradar(filename, **kwargs):
 
     # range
     _range = filemetadata("range")
-    _range["data"] = dtree['sweep_0'].range.data
-    _range["meters_to_center_of_first_gate"] = dtree['sweep_0'].range.meters_to_center_of_first_gate
-    _range["meters_between_gates"] = dtree['sweep_0'].range.meters_between_gates
+    max_sweep = "sweep_" + str(np.argmax(nbins_sweep))
+    _range["data"] = dtree[max_sweep].range.data
+    _range["meters_to_center_of_first_gate"] = dtree[max_sweep].range.meters_to_center_of_first_gate
+    _range["meters_between_gates"] = dtree[max_sweep].range.meters_between_gates
 
     # sweep_type
     scan_type = "ppi"
@@ -165,4 +165,6 @@ def read_datamet_xradar(filename, **kwargs):
 
 if __name__ == '__main__':
     radar = read_datamet_xradar(r'C:\RADAR\RAW\2023\11\22\0300\VOL\H\LAURO')
-    print("Done")
+    fig = plt.figure(figsize=[10, 10])
+    display = pyart.graph.RadarMapDisplay(radar)
+    display.plot_ppi_map('reflectivity', sweep=10)
